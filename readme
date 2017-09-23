@@ -1,0 +1,52 @@
+Ran a bunch of algorithms for classification of data provided here:
+
+
+
+Uncomment the corresponding function calls to run them in the,
+if __name__ == '__main__':
+block.
+
+So far implemented:
+
+Random forest with and without gaussian mixtures
+
+SVM with rbf, linear, sigmoid and poly kernels
+
+Logistic regression
+
+Neural Network with single layer. Tuned the hyperparameters after a thorough analysis.
+Did not include the tuning code but leaving out the file with best parameters/ play ground to input
+different number of hidden units. 
+
+Just change the for loop in this block: 
+
+Here, sending i as a parameter which determines the number of hidden unints.
+
+"""
+
+	for i in range(1,50):
+		data, features =load('bc.csv')
+		print('\n',i)
+		parameters = two_layer_model(data, features,i, learning_rate = 0.0050, num_iterations = 30000, print_cost = False)
+		arr_res.append(parameters)
+
+"""
+
+
+--> Deep Neural Network 
+	
+	This turned out not be so useful.
+
+	Used a structure where a L layer DNN has L-1 ReLu units and one sigmoid unit (at the output layer).
+
+	Experimented with various theresholds (0.1->0.5)
+
+	Can probably use other activation functions.
+
+	played areound with the hidden unit sizes in different layers, included the results and graphs
+	in a different file.
+
+	change the array layer_dims to give your own layer sizes.
+
+--> will try to implement XGB and adaboost later.
+

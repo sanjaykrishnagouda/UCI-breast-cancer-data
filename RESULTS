@@ -1,0 +1,85 @@
+########### RESULTS ###########
+
+HIDDEN UNITS = 1000, LEARNING RATE = 0.03, ITERS = 30000
+
+Training Accuracy: 0.923076923077
+Accuracy: 0.921052631579
+Time taken: 734.0775
+
+#########################################
+
+Layer dims = [19, 15, 10, 5, 1]
+ReLu ReLu ReLu ReLu Sigmoid
+
+Training Accuracy: 63.5164835165
+Test Accuracy: 59.649122807
+Time taken: 37.9948
+
+
+#########################################
+
+DNN1.PNG
+layers_dims = [19, 150, 100, 50, 1]
+
+Training Accuracy: 93.8461538462
+Test Accuracy: 92.9824561404
+Time taken: 370.5173
+
+#####################
+
+layers_dims = [19, 150, 150, 150, 1]
+Training Accuracy: 93.1868131868
+Test Accuracy: 92.1052631579
+Time taken: 714.9967
+
+
+
+#####################
+NN_SINGLE_LAYER_1.PNG
+
+hidden_unit_size = [5 , 10 , 15 , 20 , 25 , 50 , 100 , 200 , 500, 1000]
+
+Training Accuracy: 92.3076923077
+Test Accuracy: 91.2280701754
+Time taken: 29.9745
+Training Accuracy: 83.5164835165
+Test Accuracy: 85.0877192982
+Time taken: 30.1169
+Training Accuracy: 91.6483516484
+Test Accuracy: 92.9824561404
+Time taken: 40.6700
+Training Accuracy: 91.6483516484
+Test Accuracy: 88.5964912281
+Time taken: 37.6417
+Training Accuracy: 93.1868131868
+Test Accuracy: 94.7368421053
+Time taken: 42.0995
+Training Accuracy: 90.3296703297
+Test Accuracy: 92.1052631579
+Time taken: 51.4516
+Training Accuracy: 90.7692307692
+Test Accuracy: 88.5964912281
+Time taken: 86.0864
+Training Accuracy: 89.8901098901
+Test Accuracy: 91.2280701754
+Time taken: 142.4530
+Training Accuracy: 91.4285714286
+Test Accuracy: 92.1052631579
+Time taken: 459.7841
+Training Accuracy: 90.5494505495
+Test Accuracy: 89.4736842105
+Time taken: 804.1787
+
+
+#####################
+
+single layer:
+
+
+L-layer:
+layers_dims = [19, 25, 50, 50, 25, 19, 1]
+
+
+Training Accuracy: 62.4175824176
+Test Accuracy: 64.0350877193
+Time taken: 80.3134
