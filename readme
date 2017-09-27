@@ -1,5 +1,10 @@
 Ran a bunch of algorithms for classification of data provided here:
 
+See comparitive result.png for an overview of the results.
+
+Run bc.py with python 3 or run first cell in the jupyter notebook (ipython nb) "ALL.ipynb"
+Note:
+Uncomment the line (#get_ipython().run_line_magic('matplotlib', 'inline') ) if using notebook. This will enable %matplotlib inline
 
 
 Uncomment the corresponding function calls to run them in the,
