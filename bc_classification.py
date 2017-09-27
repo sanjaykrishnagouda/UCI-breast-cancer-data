@@ -28,33 +28,80 @@ def load(path):
 	data = [train_x,train_y,test_x,test_y]
 	return data
 
-def main():
-	data = load("bc.csv")
+	def NeuralNetwork(x,features):
+	# Neural Network with one hidden layer
+	# Will try and work with more hidden layers
+	# Optimization of hyperparameters for one hidden layer NN supported
+	# WORK IN PROGRESS
+	del features[-1]
+	train, test = train_test_split(x, test_size = 0.2)
+	train_x,test_x = train[features],test[features]
+	train_y, test_y = train.diagnosis.values.reshape((train.diagnosis.shape[0],1)),test.diagnosis.values.reshape((test.diagnosis.shape[0],1))
+	train_y = train_y.T
+	test_y = test_y.T
 	
-	x_train = data[0]
-	y_train = data[1]
-	x_test = data[2]
-	y_test = data[3]
-
-	x = tf.placeholder(tf.float32, [None,19])
-	W = tf.Variable(tf.random_normal([19,5])/np.sqrt(455))
-	b = tf.Variable(tf.random_normal([5])*0.01)
-	y = tf.nn.softmax(tf.matmul(x,W)+b)
-	y_ = tf.placeholder(tf.float32, [None, 10])
 	
-	cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y),reduction_indices = [1]))
-	train_step = tf.train.GradientDescentOptimizer(0.05).minimize(cross_entropy)
-	sess = tf.InteractiveSession()
-	tf.global_variables_initializer().run()
+	# DEFINING PARAMETERS 
+	n_h = 5 # number of hidden units
+	
+	# layer 1 (input layer)
 
+	w1 = np.random.randn(n_h,train_x.shape[1])*0.01/np.sqrt(train_x.shape[0])
+	b1 = np.random.randn(n_h,1)*0.01
+	w2 = np.random.randn(train_y.shape[0],n_h)*0.01/np.sqrt(train_y.shape[0])
+	b2 = np.random.randn(train_y.shape[0],1)*0.01
 
-	for el in range(1000):
-		batch_xs, batch_ys = mnist.train.next_batch(50)
-		sess.run(train_step, feed_dict = {x: batch_xs, y_: batch_ys})
+	num_iters = 10
+	learning_rate = 0.1
+	m = (1/train_y.shape[1])
+	for i in range(num_iters):
+		#print(w1.shape,w2.shape,b1.shape,b2.shape) # checkind dimensions
+
+		###### FORWARD PROPAGATION #######
+
+		z1 = np.dot(w1,train_x.T) + b1 # linear transform
+		A1 = np.maximum(z1,0.001*z1) # ReLu Activation or maybe we can use leaky ReLu 
+		z2 = np.dot(w2,A1) + b2
+		A2 = (1/(1+np.exp(-z2))) # sigmoid activation to get y hat 
+
 		
-	correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-	print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+		#print(np.log(abs(1-A2)))
+		#cost = -(1/m)*np.sum(np.dot(train_y,np.log(A2).T)+np.dot(1-train_y,np.log(1-A2).T))
+		cost = log_loss(train_y,A2) # this is throwing some error, 
+									 # no patiance to workaround, will write own loss function
+		#print(z2)
+		#print("Iteration %i, cost %.4f"%(i,cost))
 
+		
 
-main()
+		###### 	BACKWARD PROPAGATION #######
+
+		#dA2 = train_y/A2 + (1-train_y)/(1-A2)
+
+		dA2 = - (np.divide(train_y, A2) - np.divide(1 - train_y, 1 - A2))
+		#print(dA2)
+		dz2 = (dA2*(z2*(1-z2))) # deriative of sigmoid 
+
+		dw2 = (np.dot(dz2,A1.T))/m
+
+		# print(w2.shape,dw2.shape) # checking fwd bwd param dims
+
+		db2 = np.sum(dz2, axis = 1, keepdims = True) / m
+
+		dA1 = np.dot(w2.T,dz2)
+
+		
+		dz1 = (dA1 ) #relu derivative (modified, ReLu is not differentiable at 0 )
+
+		dw1 = np.dot(dz1,train_x) / m
+
+		db1 = np.sum(dz1, axis = 1, keepdims = True) / m
+		#print(w1.shape,dw1.shape, b1.shape, db1.shape) # checking fwd bwd param dims
+		
+		##### UPDATING PARAMETERS ######
+
+		w1 = w1 - learning_rate * dw1
+		b1 = b1 - learning_rate * db1
+		w2 = w2 - learning_rate * dw2
+		b2 = b2 - learning_rate * db2
+		#print("Iteration %i, cost2 %.4f"%(i,cost2))

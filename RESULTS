@@ -83,3 +83,18 @@ layers_dims = [19, 25, 50, 50, 25, 19, 1]
 Training Accuracy: 62.4175824176
 Test Accuracy: 64.0350877193
 Time taken: 80.3134
+
+
+###############
+
+		layers_dims = [19, 44, 44, 44, 1]
+		L_layer_model(data, features, layers_dims, learning_rate = 0.01, num_iterations = 15000, print_cost = False)		
+
+Training Accuracy: 91.2087912088
+Test Accuracy: 85.9649122807
+
+###########################
+
+layers_dims = [19, 44, 44, 1]
+Training Accuracy: 94.0659340659
+Test Accuracy: 92.1052631579
