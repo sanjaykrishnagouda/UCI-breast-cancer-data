@@ -18,7 +18,7 @@ from sklearn.metrics import confusion_matrix,precision_recall_curve,auc,roc_auc_
 #from scipy.optimize import fmin_bfgs as bfgs
 from sklearn.metrics import log_loss
 #%matplotlib inline
-from IPython import get_ipython
+#from IPython import get_ipython
 #get_ipython().run_line_magic('matplotlib', 'inline')  ### comment out this line unless you're running this script using ipython notebook
 def load(str):
 
@@ -150,6 +150,9 @@ def LogReg(x, features):
 	plt.plot(c_p,training_accuracy, label = 'Training Accuracy')
 	plt.plot(c_p,testing_accuracy, label = 'Testing Accuracy')
 	plt.legend()
+	#plt.ion()
+	#plt.draw()
+	#plt.draw()
 	plt.show()
 	return(max(acc_dict.items(),key = operator.itemgetter(1))[1]*100)
 def ADB():
@@ -458,9 +461,8 @@ def two_layer_model(data, features,n_h, learning_rate = 0.015, num_iterations = 
 	n_y = train_y.shape[0]
 	
 	# Initialize parameters dictionary, by calling one of the functions you'd previously implemented
-	### START CODE HERE ### (≈ 1 line of code)
 	parameters = initialize_parameters(n_x, n_h, n_y)
-	### END CODE HERE ###
+
 	
 	# Get W1, b1, W2 and b2 from the dictionary parameters.
 	W1 = parameters["W1"]
@@ -473,27 +475,23 @@ def two_layer_model(data, features,n_h, learning_rate = 0.015, num_iterations = 
 	for i in range(0, num_iterations):
 
 		# Forward propagation: LINEAR -> RELU -> LINEAR -> SIGMOID. Inputs: "X, W1, b1". Output: "A1, cache1, A2, cache2".
-		### START CODE HERE ### (≈ 2 lines of code)
+
 		A1, cache1 = linear_activation_forward(train_x, W1, b1, 'relu')
 		#A1, cache1 = linear_activation_forward(train_x, W1, b1, 'tanh')
 		A2, cache2 = linear_activation_forward(A1, W2, b2, 'sigmoid')
-		### END CODE HERE ###
+
 		
 		# Compute cost
-		### START CODE HERE ### (≈ 1 line of code)
 		cost = compute_cost(A2, train_y)
-		### END CODE HERE ###
 		if cost <= 0.1:
 			break
 		# Initializing backward propagation
 		dA2 = - (np.divide(train_y, A2) - np.divide(1 - train_y, 1 - A2))
 		
 		# Backward propagation. Inputs: "dA2, cache2, cache1". Outputs: "dA1, dW2, db2; also dA0 (not used), dW1, db1".
-		### START CODE HERE ### (≈ 2 lines of code)
 		dA1, dW2, db2 = linear_activation_backward(dA2, cache2, 'sigmoid')
 		#dA0, dW1, db1 = linear_activation_backward(dA1, cache1, 'tanh')
 		dA0, dW1, db1 = linear_activation_backward(dA1, cache1, 'relu')
-		### END CODE HERE ###
 		
 		# Set grads['dWl'] to dW1, grads['db1'] to db1, grads['dW2'] to dW2, grads['db2'] to db2
 		grads['dW1'] = dW1
@@ -502,9 +500,7 @@ def two_layer_model(data, features,n_h, learning_rate = 0.015, num_iterations = 
 		grads['db2'] = db2
 		
 		# Update parameters.
-		### START CODE HERE ### (approx. 1 line of code)
 		parameters = update_parameters(parameters, grads, learning_rate)
-		### END CODE HERE ###
 
 		# Retrieve W1, b1, W2, b2 from parameters
 		W1 = parameters["W1"]
@@ -525,19 +521,17 @@ def two_layer_model(data, features,n_h, learning_rate = 0.015, num_iterations = 
 	# Forward propagation
 	probas, caches = L_model_forward(train_x, parameters)
 
-	
-	# convert probas to 0/1 predictions
 	for i in range(0, probas.shape[1]):
 		if probas[0,i] > 0.5:
 			p[0,i] = 1
 		else:
 			p[0,i] = 0
-
-	print("Training Accuracy: "  + str(np.sum((p == train_y)*100)/455))
+	b = np.sum((p == train_y)*100)/m
+	print("Training Accuracy: "  + str(b))
 	a = predict(test_x,test_y,parameters)
 	end = time.time()
 	#print("Time taken: %.4f"%(end-start))
-	return a
+	return a,b
 	
 
 def L_layer_model(data, features, layers_dims, learning_rate = 0.015, num_iterations = 5000, print_cost=False):#lr was 0.009
@@ -603,7 +597,7 @@ def L_layer_model(data, features, layers_dims, learning_rate = 0.015, num_iterat
 	
 	# convert probas to 0/1 predictions
 	for i in range(0, probas.shape[1]):
-		if probas[0,i] > 0.5:
+		if probas[0,i] > 0.3:
 			p[0,i] = 1
 		else:
 			p[0,i] = 0
@@ -619,6 +613,7 @@ def L_layer_model(data, features, layers_dims, learning_rate = 0.015, num_iterat
 	#plt.ylabel('cost')
 	#plt.xlabel('iterations (per tens)')
 	#plt.title("Learning rate =" + str(learning_rate))
+	##plt.ion()
 	#plt.show()
 	
 	return a
@@ -632,26 +627,34 @@ def call_function(x):
 		return LogReg(data,features)
 	elif function == "NN":
 		arr_res=[]
+		arr_res_train = []
 		arr=[]
 		arr.append(0)
-		print("Neural Network with one hidden layer :\n")
-		for i in range(1,100):
+		max_dict = {}
+		print("\nNeural Network with one hidden layer :\n")
+		for i in range(1,200):
 			start = time.time()
-			arr.append(i*2)
+			arr.append(i)
 			data, features =load('bc.csv')
-			print('\nNumber of Hidden Units = ',2*i)
-			parameters = two_layer_model(data, features,i*2, learning_rate = 0.0035, num_iterations = 30000, print_cost = False)
-			arr_res.append(parameters)
+			print('\nNumber of Hidden Units = ',i)
+			a,b = two_layer_model(data, features,i, learning_rate = 0.0035, num_iterations = 30000, print_cost = False)
+			arr_res.append(a)
+			arr_res_train.append(b)
 			end = time.time()
+			max_dict[ i ] = a
 			#print("\nTime taken for = %.4f"%(end-start))
-		arr_res.append(parameters)
-		arr_res.sort()
-		#nn_acc = arr_res[0]		
-		plt.plot(arr,arr_res,'bo')
-		#plt.plot(arr_res)
-		plt.ylabel("Test Accuracy")
+		print("\nMax acc %.4f with %i layers"%( max(max_dict.items(),key = operator.itemgetter(1))[1],max(max_dict.items(),key = operator.itemgetter(1))[0]-1))
+		arr_res.append(a)
+		arr_res_train.append(b)
+		#nn_acc = arr_res[0]
+		plt.plot(arr,arr_res_train, label = 'Training Accuracy')		
+		plt.plot(arr,arr_res, label = 'Testing Accuracy')
+		plt.legend()
+		plt.ylabel("Accuracy")
 		plt.xlabel("Hidden Unit Size")
 		plt.show()
+		arr_res.sort()
+		arr_res_train.sort()
 		return arr_res[-1]
 	elif function == "GMM":	
 		gmm_acc = gmm(data,features)
@@ -695,7 +698,7 @@ def call_function(x):
 		return [rbf_acc, poly_acc, sigmoid_acc,linear_acc]
 	
 	elif function == "DNN":
-		layers_dims = [19, 48, 1]
+		layers_dims = [19, 10, 15, 30, 1]
 		dnn_acc = L_layer_model(data, features, layers_dims, learning_rate = 0.01, num_iterations = 15000, print_cost = False)		
 		return dnn_acc
 
@@ -710,19 +713,17 @@ if __name__ == '__main__':
 	
 	"""
 	total_start = time.time()
-	lr_acc = call_function("LR")
 	nn_acc = call_function("NN")
+	print(nn_acc)
+	
+	gmm_acc = call_function("GMM")
+	lr_acc = call_function("LR")
 	dnn_acc = call_function("DNN")
 	a = call_function("SVM")
 	rbf_acc,  poly_acc, sigmoid_acc, linear_acc, = a[0], a[1], a[2], a[3]
-	rfc_acc = call_function("RFC")
-	gmm_acc = call_function("GMM")
+	rfc_acc = call_function("RFC")	
 	names = ['Logistic Regression', 'Two layer NN', 'Deep Neural Network', 'Random Forest with GMM','Random Forest','SVM with rbf','SVM with poly', 'SVM with sigmoid', 'SVM with linear']
 	accs = [lr_acc,nn_acc,dnn_acc,gmm_acc,rfc_acc,rbf_acc*100,poly_acc*100,sigmoid_acc*100,linear_acc*100]
-	#plt.xlabel("Algorithm")
-	#plt.ylabel("Max test accuracy")
-	#plt.plot(names,accs,'bo')
-	#plt.show()
 	for i in range(len(names)):
 		print(names[i]," = ", accs[i],"\n" )
 	total_end = time.time()
